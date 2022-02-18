@@ -1,0 +1,67 @@
+kubectl apply -f config/samples/cache_v1alpha1_packer.yaml
+
+# this creates ephemeral storage on sabre
+# curl --digest --user admin:admin sabre.robot.example.com
+kubectl apply -f - <<.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sabre-deployment
+spec:
+  selector:
+    matchLabels:
+      app: sabre
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sabre
+    spec:
+      containers:
+      - name: sabre
+        image: xama/nginx-webdav
+        ports:
+        - containerPort: 80
+        env:
+        - name: WEBDAV_USERNAME
+          value: admin
+        - name: WEBDAV_PASSWORD
+          value: admin
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sabre
+spec:
+  clusterIP: None
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: sabre
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+  name: sabre-ingress
+spec:
+  rules:
+  - host: sabre.robot.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: sabre
+          servicePort: 80
+        path: /
+        pathType: Prefix
+.

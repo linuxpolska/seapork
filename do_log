@@ -1,0 +1,1 @@
+kubectl logs $(kubectl get pods -n packer-operator-system|tail -1|awk '{print $1}') -n packer-operator-system -c manager -f

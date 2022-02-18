@@ -1,0 +1,1 @@
+make docker-build docker-push deploy IMG=docker-registry.default.svc.cluster.local:5000/operator-packer:latest

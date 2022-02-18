@@ -1,0 +1,334 @@
+apiVersion: cache.example.com/v1alpha1
+kind: Packer
+metadata:
+  name: packer-sample
+spec:
+  packer_builds:
+  - builder: vbox
+    builder_hostname: majime
+    builder_username: builder
+    builder_key: |
+      -----BEGIN OPENSSH PRIVATE KEY-----
+      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
+      -----END OPENSSH PRIVATE KEY-----
+    kind: debian
+    name: debian-11
+    type: Debian_64
+    iso_src: "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.2.0-amd64-netinst.iso"
+    iso_checksum: "sha512:c685b85cf9f248633ba3cd2b9f9e781fa03225587e0c332aef2063f6877a1f0622f56d44cf0690087b0ca36883147ecb5593e3da6f965968402cdbdf12f6dd74"
+    memory: 2048
+    cpus: 2
+    disk: 20000
+    boot_cmd: '["<esc><wait>", "install <wait>", " preseed/url=http://<< .HTTPIP >>:<< .HTTPPort >>/preseed.cfg <wait>", "debian-installer=en_US.UTF-8 <wait>", "auto <wait>", "locale=en_US.UTF-8 <wait>", "kbd-chooser/method=us <wait>", "keyboard-configuration/xkb-keymap=us <wait>", "netcfg/get_hostname=<< .Name >> <wait>", "netcfg/get_domain=vagrantup.com <wait>", "fb=false <wait>", "debconf/frontend=noninteractive <wait>", "console-setup/ask_detect=false <wait>", "console-keymaps-at/keymap=us <wait>", "grub-installer/bootdev=/dev/sda <wait>", "<enter><wait>"]'
+    username: vagrant
+    password: vagrant
+    keep_files: true
+    target_server: http://sabre.robot.example.com
+    target_username: admin
+    target_password: admin
+    boot_files:
+      - name: preseed.cfg
+        valueFrom:
+          configMapRef:
+            name: packer-debian-11
+            key: preseed.cfg
+      - name: PLACEHOLDER
+        value: Just a placeholder for tests to run, not used in actual install process.
+    scripts:
+      - name: base.sh
+        valueFrom:
+          configMapRef:
+            name: packer-debian-11
+            key: base.sh
+      - name: vagrant.sh
+        valueFrom:
+          configMapRef:
+            name: packer-debian-11
+            key: vagrant.sh
+      - name: virtualbox.sh
+        valueFrom:
+          configMapRef:
+            name: packer-debian-11
+            key: virtualbox.sh
+      - name: provision.sh
+        valueFrom:
+          configMapRef:
+            name: packer-debian-11
+            key: provision.sh
+      - name: cleanup.sh
+        valueFrom:
+          configMapRef:
+            name: packer-debian-11
+            key: cleanup.sh
+      - name: zerodisk.sh
+        valueFrom:
+          configMapRef:
+            name: packer-debian-11
+            key: zerodisk.sh
+      - name: motd.sh
+        value: |
+          #!/bin/bash
+          echo "All work and no play makes Jack a dull boy." >>/etc/motd
+
+  - builder: vmware
+    builder_hostname: majime
+    builder_username: builder
+    builder_key: |
+      -----BEGIN OPENSSH PRIVATE KEY-----
+      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
+      -----END OPENSSH PRIVATE KEY-----
+    kind: debian
+    name: debian-11
+    type: debian10_64Guest
+    iso_src: "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-11.2.0-amd64-netinst.iso"
+    iso_checksum: "sha512:c685b85cf9f248633ba3cd2b9f9e781fa03225587e0c332aef2063f6877a1f0622f56d44cf0690087b0ca36883147ecb5593e3da6f965968402cdbdf12f6dd74"
+    memory: 2048
+    cpus: 2
+    disk: 20000
+    boot_cmd: '["<esc><wait>", "install <wait>", " preseed/url=http://<< .HTTPIP >>:<< .HTTPPort >>/preseed.cfg <wait>", "debian-installer=en_US.UTF-8 <wait>", "auto <wait>", "locale=en_US.UTF-8 <wait>", "kbd-chooser/method=us <wait>", "keyboard-configuration/xkb-keymap=us <wait>", "netcfg/get_hostname=<< .Name >> <wait>", "netcfg/get_domain=vagrantup.com <wait>", "fb=false <wait>", "debconf/frontend=noninteractive <wait>", "console-setup/ask_detect=false <wait>", "console-keymaps-at/keymap=us <wait>", "grub-installer/bootdev=/dev/sda <wait>", "<enter><wait>"]'
+    username: vagrant
+    password: vagrant
+    keep_files: true
+    target_server: http://sabre.robot.example.com
+    target_username: admin
+    target_password: admin
+    boot_files:
+      - name: preseed.cfg
+        valueFrom:
+          configMapRef:
+            name: packer-debian-11
+            key: preseed.cfg
+      - name: PLACEHOLDER
+        value: Just a placeholder for tests to pass, not used by Packer process.
+    scripts:
+      - name: base.sh
+        valueFrom:
+          configMapRef:
+            name: packer-debian-11
+            key: base.sh
+      - name: vagrant.sh
+        valueFrom:
+          configMapRef:
+            name: packer-debian-11
+            key: vagrant.sh
+      - name: provision.sh
+        valueFrom:
+          configMapRef:
+            name: packer-debian-11
+            key: provision.sh
+      - name: cleanup.sh
+        valueFrom:
+          configMapRef:
+            name: packer-debian-11
+            key: cleanup.sh
+      - name: zerodisk.sh
+        valueFrom:
+          configMapRef:
+            name: packer-debian-11
+            key: zerodisk.sh
+      - name: motd.sh
+        value: |
+          #!/bin/bash
+          echo "We all live in the yellow subroutine." >>/etc/motd
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: packer-debian-11
+data:
+  "base.sh": |
+    #!/bin/sh -eux
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update
+    apt-get -y upgrade
+    apt-get -y install linux-headers-$(uname -r) build-essential dkms
+
+    sed -i -e '/Defaults\s\+env_reset/a Defaults\texempt_group=sudo' /etc/sudoers
+    sed -i -e 's/%sudo  ALL=(ALL:ALL) ALL/%sudo  ALL=NOPASSWD:ALL/g' /etc/sudoers
+
+    echo "UseDNS no" >> /etc/ssh/sshd_config
+
+    rm -f /etc/udev/rules.d/70-persistent-net.rules;
+    mkdir -p /etc/udev/rules.d/70-persistent-net.rules;
+    rm -f /lib/udev/rules.d/75-persistent-net-generator.rules;
+
+  "vagrant.sh": |
+    # #!/bin/sh -eux
+    date > /etc/vagrant_box_build_time
+
+    mkdir /home/vagrant/.ssh
+    wget --no-check-certificate \
+        'https://github.com/mitchellh/vagrant/raw/master/keys/vagrant.pub' \
+        -O /home/vagrant/.ssh/authorized_keys
+    chown -R vagrant /home/vagrant/.ssh
+    chmod -R go-rwsx /home/vagrant/.ssh
+
+  "virtualbox.sh": |
+    #!/bin/sh -eux
+
+    VER="`cat /home/vagrant/.vbox_version`";
+
+    echo "Virtualbox Tools Version: $VER";
+
+    mkdir -p /tmp/vbox;
+    mount -o loop /home/vagrant/VBoxGuestAdditions_${VER}.iso /tmp/vbox;
+    sh /tmp/vbox/VBoxLinuxAdditions.run \
+            || echo "VBoxLinuxAdditions.run exited $? and is suppressed." \
+                "For more read https://www.virtualbox.org/ticket/12479";
+    umount /tmp/vbox;
+    rm -rf /tmp/vbox;
+    rm -f /home/vagrant/*.iso;
+
+  "provision.sh": |
+    #!/bin/sh
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update
+    apt-get dist-upgrade -y
+    apt-get -y install vim python3-venv python3-pip unzip git
+    pip3 install ansible molecule pytest-testinfra
+
+  "cleanup.sh": |
+    #!/bin/sh
+    export DEBIAN_FRONTEND=noninteractive
+
+    echo "Delete unneeded files."
+    rm -f /home/vagrant/*.sh
+
+    echo "cleaning up dhcp leases"
+    rm /var/lib/dhcp/*
+
+    echo "Apt cleanup."
+    sudo apt-get -y autoremove
+    sudo apt-get -y clean
+
+    # Add `sync` so Packer doesn't quit too early, before the large file is deleted.
+    sync
+
+  "zerodisk.sh": |
+    #!/bin/sh
+    echo "Writing zeroes until out of disk space (error is normal here)"
+    dd if=/dev/zero of=/EMPTY bs=1M
+    rm -f /EMPTY
+
+  "preseed.cfg": |
+    choose-mirror-bin mirror/http/proxy string
+    d-i apt-setup/use_mirror boolean true
+    d-i base-installer/kernel/override-image string linux-server
+    d-i clock-setup/utc boolean true
+    d-i clock-setup/utc-auto boolean true
+    d-i finish-install/reboot_in_progress note
+    d-i grub-installer/only_debian boolean true
+    d-i grub-installer/with_other_os boolean true
+    d-i grub-installer/bootdev  string /dev/sda
+    d-i keymap select us
+    d-i mirror/country string manual
+    d-i mirror/http/directory string /debian
+    d-i mirror/http/hostname string http.debian.net
+    d-i mirror/http/proxy string
+    d-i partman-auto-lvm/guided_size string max
+    d-i partman-auto/choose_recipe select atomic
+    d-i partman-auto/method string lvm
+    d-i partman-lvm/confirm boolean true
+    d-i partman-lvm/confirm boolean true
+    d-i partman-lvm/confirm_nooverwrite boolean true
+    d-i partman-lvm/device_remove_lvm boolean true
+    d-i partman/choose_partition select finish
+    d-i partman/confirm boolean true
+    d-i partman/confirm_nooverwrite boolean true
+    d-i partman/confirm_write_new_label boolean true
+    d-i passwd/root-login boolean false
+    d-i passwd/root-password-again password vagrant
+    d-i passwd/root-password password vagrant
+    d-i passwd/user-fullname string vagrant
+    d-i passwd/user-uid string 900
+    d-i passwd/user-password password vagrant
+    d-i passwd/user-password-again password vagrant
+    d-i passwd/username string vagrant
+    d-i pkgsel/include string openssh-server sudo bzip2 acpid cryptsetup zlib1g-dev wget curl dkms make nfs-common
+    d-i pkgsel/install-language-support boolean false
+    d-i pkgsel/update-policy select unattended-upgrades
+    d-i pkgsel/upgrade select full-upgrade
+    # Prevent packaged version of VirtualBox Guest Additions being installed:
+    d-i preseed/early_command string sed -i \
+      '/in-target/idiscover(){/sbin/discover|grep -v VirtualBox;}' \
+      /usr/lib/pre-pkgsel.d/20install-hwpackages
+    d-i time/zone string UTC
+    d-i user-setup/allow-password-weak boolean true
+    d-i user-setup/encrypt-home boolean false
+    d-i preseed/late_command string sed -i '/^deb cdrom:/s/^/#/' /target/etc/apt/sources.list
+    apt-cdrom-setup apt-setup/cdrom/set-first boolean false
+    apt-mirror-setup apt-setup/use_mirror boolean true
+    popularity-contest popularity-contest/participate boolean false
+    tasksel tasksel/first multiselect standard
+

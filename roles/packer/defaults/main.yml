@@ -1,0 +1,6 @@
+---
+# defaults file for packer
+
+packer_version: 1.7.10
+packer_bin_path: /usr/local/bin
+packer_builds: []

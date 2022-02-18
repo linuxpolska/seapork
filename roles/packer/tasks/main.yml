@@ -1,0 +1,224 @@
+---
+# tasks file for packer
+
+- name: Gather facts
+  setup:
+
+- name: Get contents of all CMs
+  community.kubernetes.k8s_info:
+    kind: ConfigMap
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: k8s_cms
+
+- name: Configure CMs keys
+  set_fact:
+    packer_cms: "{{ packer_cms | default({}) | combine({ item.metadata.name: item.data }) }}"
+  when:
+    - item.kind == "ConfigMap"
+    - item.metadata is defined
+    - item.metadata.name is defined
+    - item.data is defined
+    - item.metadata.namespace == ansible_operator_meta.namespace
+  loop: "{{ k8s_cms.resources }}"
+
+- name: Make key space
+  file:
+    path: "{{ ansible_facts.env.HOME }}/.ssh"
+    mode: '0700'
+    state: directory
+
+- name: Install builder keys
+  copy:
+    dest: "{{ ansible_facts.env.HOME }}/.ssh/{{ item.name }}-{{ item.builder }}.key"
+    mode: '0600'
+    content: "{{ item.builder_key }}"
+  loop: "{{ packer_builds }}"
+
+- name: Instantiate builders
+  add_host:
+    name: "{{ item.name }}-{{ item.builder }}"
+    groups:
+      - builders
+      - "{{ item.builder }}"
+    ansible_host: "{{ item.builder_hostname }}"
+    ansible_user: "{{ item.builder_username }}"
+    #ansible_ssh_pass: "{{ item.builder_password }}"
+    ansible_ssh_private_key_file: "{{ ansible_facts.env.HOME }}/.ssh/{{ item.name }}-{{ item.builder }}.key"
+    ansible_become: true
+    ansible_connection: smart
+  loop: "{{ packer_builds }}"
+
+- name: Ensure unzip and curl are installed
+  package:
+    name:
+      - unzip
+      - curl
+    state: present
+  delegate_to: "{{ item }}"
+  loop: "{{ groups.builders }}"
+
+- name: Determine architecture
+  set_fact:
+    packer_arch: "{% if 'x86_64' in ansible_facts.architecture %}amd64{% elif 'arm' in ansible_facts.architecture %}arm64{% elif '386' in ansible_facts.architecture %}386{% else %}{{ ansible_facts.architecture }}{% endif %}"
+  delegate_to: "{{ item }}"
+  loop: "{{ groups.builders }}"
+
+- name: Determine packer version
+  set_fact:
+    packer_src: https://releases.hashicorp.com/packer/{{ packer_version }}/packer_{{ packer_version }}_linux_{{ packer_arch }}.zip
+  delegate_to: "{{ item }}"
+  loop: "{{ groups.builders }}"
+
+- name: Download and unarchive Packer [{{ packer_src }}]
+  unarchive:
+    src: "{{ packer_src }}"
+    dest: "{{ packer_bin_path }}"
+    remote_src: true
+    creates: "{{ packer_bin_path }}/packer"
+  delegate_to: "{{ item }}"
+  loop: "{{ groups.builders }}"
+
+- name: Update Ansible Operator object after builders setup
+  operator_sdk.util.k8s_status:
+    api_version: cache.example.com/v1alpha1
+    kind: Packer
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    replace: false
+    conditions:
+      - type: Checkpoint
+        status: "True"
+        reason: BuildersReady
+        message: |
+          Builders are ready:
+          {% for b in groups.builders %}
+          - {{ b }}
+          {% endfor %}
+        lastTransitionTime: "{{ lookup('pipe', 'date --rfc-3339 seconds') }}"
+
+- name: Run build tasks
+  include_tasks: build_one.yml
+  loop: "{{ packer_builds }}"
+  loop_control:
+    loop_var: build
+
+- name: Print active jobs
+  debug:
+    var: packer_run
+    verbosity: 2
+
+- name: Print active items
+  debug:
+    var: packer_img
+    verbosity: 2
+
+- name: Update Ansible Operator object after builders started
+  operator_sdk.util.k8s_status:
+    api_version: cache.example.com/v1alpha1
+    kind: Packer
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    replace: false
+    conditions:
+      - type: Checkpoint
+        status: "True"
+        reason: BuildersRunning
+        message: |
+          Builders are running:
+          {% for k,v in packer_img.items() %}
+          - {{ k }} (will deliver images to ==> {{ v.target_server }})
+          {% endfor %}
+        lastTransitionTime: "{{ lookup('pipe', 'date --rfc-3339 seconds') }}"
+
+- name: Wait for jobs to complete
+  async_status:
+    jid: "{{ packer_run[item].ansible_job_id }}"
+  register: job_result
+  until: job_result.finished
+  retries: 600
+  delay: 10
+  delegate_to: "{{ item }}"
+  loop: "{{ groups.builders }}"
+
+- name: Gather artifacts
+  find:
+    paths: "{{ packer_img[item].build_root }}"
+    patterns: '*.box,*.img,*.log'
+  delegate_to: "{{ item }}"
+  register: packer_files
+  loop: "{{ groups.builders }}"
+
+- name: Print active files
+  debug:
+    var: packer_files
+    verbosity: 2
+
+- name: Update Ansible Operator object after builders finished
+  operator_sdk.util.k8s_status:
+    api_version: cache.example.com/v1alpha1
+    kind: Packer
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    replace: false
+    conditions:
+      - type: Checkpoint
+        status: "True"
+        reason: BuildersComplete
+        message: |
+          Builders have finished:
+          {% for k,v in packer_img.items() %}
+          - {{ k }} (now delivering images to ==> {{ v.target_server }})
+          {% endfor %}
+        lastTransitionTime: "{{ lookup('pipe', 'date --rfc-3339 seconds') }}"
+
+- name: Deliver images
+  shell: |
+    {% for file in packer_files.results[builder_number].files %}
+    curl -s --digest --user {{ packer_img[item].target_username }}:{{ packer_img[item].target_password }} -T '{{ file.path }}' '{{ packer_img[item].target_server }}/' ;
+    {% endfor %}
+  when:
+    - packer_img[item].target_server_type == 'webdav'
+    - packer_img[item].target_server != ''
+    - packer_img[item].target_username != ''
+    - packer_img[item].target_password != ''
+  delegate_to: "{{ item }}"
+  register: img_delivery_status
+  loop: "{{ groups.builders }}"
+  loop_control:
+    index_var: builder_number
+
+- name: Update Ansible Operator object after delivery
+  operator_sdk.util.k8s_status:
+    api_version: cache.example.com/v1alpha1
+    kind: Packer
+    name: "{{ ansible_operator_meta.name }}"
+    namespace: "{{ ansible_operator_meta.namespace }}"
+    replace: false
+    conditions:
+      - type: Checkpoint
+        status: "True"
+        reason: UploadComplete
+        message: |
+          Uploaded URLs:
+          {% for builder in packer_files.results %}
+          {% for file in builder.files %}
+          - {{ packer_img[builder.item].target_server }}/{{ file.path | regex_replace('.*\/','') }} (from builder ==> {{ builder.item }})
+          {% endfor %}
+          {% endfor %}
+        lastTransitionTime: "{{ lookup('pipe', 'date --rfc-3339 seconds') }}"
+
+- name: Print active items
+  debug:
+    var: img_delivery_status
+    verbosity: 2
+
+- name: Clean workspaces
+  file:
+    path: "{{ packer_img[item].build_root }}"
+    state: absent
+    recurse: true
+    force: true
+  when: not packer_img[item].keep_files
+  delegate_to: "{{ item }}"
+  loop: "{{ groups.builders }}"
+

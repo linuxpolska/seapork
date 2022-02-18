@@ -1,0 +1,6 @@
+kubectl delete namespace packer-operator-system
+kubectl delete packer packer-sample
+kubectl delete configmap packer-debian-11
+kubectl delete deployment sabre-deployment
+kubectl delete svc sabre
+kubectl delete ingress sabre-ingress

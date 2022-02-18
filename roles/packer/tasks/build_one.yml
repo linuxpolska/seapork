@@ -1,0 +1,107 @@
+---
+- name: Name a builder
+  set_fact:
+    curr_builder: "{{ build.name }}-{{ build.builder }}"
+
+- name: Run a build
+  delegate_to: "{{ curr_builder }}"
+  block:
+
+  - name: Set build name
+    set_fact:
+      build_name: "{{ build.name }}-{{ ansible_facts.architecture }}-{{ build.builder }}-{{ ansible_facts.date_time.iso8601 }}"
+
+  - name: Create workspace
+    file:
+      path: "{{ item }}"
+      state: directory
+      recurse: true
+    loop:
+      - /tmp/packer/{{ build_name }}
+      - /tmp/packer/{{ build_name }}/http
+      - /tmp/packer/{{ build_name }}/scripts
+
+  - name: Show me my boot files
+    debug:
+      var: build.boot_files
+      verbosity: 2
+
+  - name: Create boot files (direct values)
+    copy:
+      content: "{{ item.value }}"
+      dest: /tmp/packer/{{ build_name }}/http/{{ item.name }}
+    when:
+      - item.name is defined
+      - item.value is defined
+    loop: "{{ build.boot_files }}"
+
+  - name: Create boot files (via CMs)
+    copy:
+      content: "{{ packer_cms[item.value_from.config_map_ref.name][item.value_from.config_map_ref.key] }}"
+      dest: /tmp/packer/{{ build_name }}/http/{{ item.name }}
+    when:
+      - item.name is defined
+      - item.value_from is defined and item.value_from.config_map_ref is defined and item.value_from.config_map_ref.name is defined and item.value_from.config_map_ref.key is defined
+    loop: "{{ build.boot_files }}"
+
+  - name: Show me my config files
+    debug:
+      var: build.scripts
+      verbosity: 2
+
+  - name: Create scripts (direct values)
+    copy:
+      content: "{{ item.value }}"
+      dest: /tmp/packer/{{ build_name }}/scripts/{{ item.name }}
+    when:
+      - item.name is defined
+      - item.value is defined
+    loop: "{{ build.scripts }}"
+
+  - name: Create scripts (via CMs)
+    copy:
+      content: "{{ packer_cms[item.value_from.config_map_ref.name][item.value_from.config_map_ref.key] }}"
+      dest: /tmp/packer/{{ build_name }}/scripts/{{ item.name }}
+    when:
+      - item.name is defined
+      - item.value_from is defined and item.value_from.config_map_ref is defined and item.value_from.config_map_ref.name is defined and item.value_from.config_map_ref.key is defined
+    loop: "{{ build.scripts }}"
+
+  - name: Create build template
+    template:
+      src: "{{ build.builder }}.pkr.hcl.j2"
+      dest: /tmp/packer/{{ build_name }}/{{ build_name }}.pkr.hcl
+
+  - name: Initialize packer
+    command: packer init .
+    args:
+      chdir: /tmp/packer/{{ build_name }}
+    environment:
+      PACKER_LOG: 1
+      PACKER_LOG_PATH: /tmp/packer/{{ build_name }}/{{ build_name }}-init.log
+
+  - name: Run packer
+    command: packer build .
+    args:
+      chdir: /tmp/packer/{{ build_name }}
+    environment:
+      PACKER_LOG: 1
+      PACKER_LOG_PATH: /tmp/packer/{{ build_name }}/{{ build_name }}-build.log
+    async: 10000
+    poll: 0
+    register: packer_out
+
+  - name: Set helper vars
+    set_fact:
+      target_server: "{{ build.target_server | default('') }}"
+      target_username: "{{ build.target_username | default('') }}"
+      target_password: "{{ build.target_password | default('') }}"
+      target_server_type: "{{ build.target_server_type | default('webdav') }}"
+      keep_files: "{{ build.keep_files | default(false) }}"
+      build_root: "/tmp/packer/{{ build_name }}"
+
+  - name: Pass results to dict
+    set_fact:
+      packer_run: "{{ packer_run | default({}) | combine({ curr_builder: packer_out }) }}"
+      packer_img: "{{ packer_img | default({}) | combine({ curr_builder: { 'build_root': build_root, 'keep_files': keep_files, 'target_server': target_server, 'target_server_type' : target_server_type, 'target_username': target_username, 'target_password': target_password } }) }}"
+

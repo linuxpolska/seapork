@@ -7,45 +7,7 @@ spec:
   - builder: vbox
     builder_hostname: majime
     builder_username: builder
-    builder_key: |
-      -----BEGIN OPENSSH PRIVATE KEY-----
-      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
-      -----END OPENSSH PRIVATE KEY-----
+    builder_key: FIXME (add secret reference)
     kind: debian
     name: debian-11
     type: Debian_64
@@ -108,45 +70,7 @@ spec:
   - builder: vmware
     builder_hostname: majime
     builder_username: builder
-    builder_key: |
-      -----BEGIN OPENSSH PRIVATE KEY-----
-      b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABlwAAAAdzc2gtcn
-      NhAAAAAwEAAQAAAYEA99/h3ZCSwYHuki9nPbvGFGAPsJUwcUZKpPEnC+IkuihJ6T/4aCPc
-      hIKkqalMvMy+SEiyqTphLyTjq8sORBXPVUtRdsaL7Umn8ksEQr+7+9/5S6Q+zXK7dJNC//
-      1nilQJy4GW84lh6moddWEli4ek6Sj5lPuWLL0W1TLW8AFysgc6Z5sXyzmMfGVShksB/bC6
-      ggvCSgEx1+vIgZRR/VkP0vl+AvYXflu1gpDeNXQ8yBNgJ6rtQuaaASBZNW6rarjyhsI6Fx
-      CcUVtJ7YcorcNR8JANPSxo12Eevqi8HQuk+nhcy/GOL0tdyf8Vks56x3NEQke0hczwQaHf
-      +NO47pORKmH0lfGcAi0+a7+8j1sfIdNVGTzt01H4DXjIX92Cnos1BYQV2Vl5lls4yO4n3Q
-      IxVshiNx4F4OGPKOImp5CGDy94TmPDfv8NvoSQJjhPMWnIfkP+1dPMNuuQMlVVTejyr5uY
-      WqU6dXkSB3o8rq3I8c2uW7h9RyJ7ETSyh9FyjGqtAAAFiLK3B6WytwelAAAAB3NzaC1yc2
-      EAAAGBAPff4d2QksGB7pIvZz27xhRgD7CVMHFGSqTxJwviJLooSek/+Ggj3ISCpKmpTLzM
-      vkhIsqk6YS8k46vLDkQVz1VLUXbGi+1Jp/JLBEK/u/vf+UukPs1yu3STQv/9Z4pUCcuBlv
-      OJYepqHXVhJYuHpOko+ZT7liy9FtUy1vABcrIHOmebF8s5jHxlUoZLAf2wuoILwkoBMdfr
-      yIGUUf1ZD9L5fgL2F35btYKQ3jV0PMgTYCeq7ULmmgEgWTVuq2q48obCOhcQnFFbSe2HKK
-      3DUfCQDT0saNdhHr6ovB0LpPp4XMvxji9LXcn/FZLOesdzREJHtIXM8EGh3/jTuO6TkSph
-      9JXxnAItPmu/vI9bHyHTVRk87dNR+A14yF/dgp6LNQWEFdlZeZZbOMjuJ90CMVbIYjceBe
-      DhjyjiJqeQhg8veE5jw37/Db6EkCY4TzFpyH5D/tXTzDbrkDJVVU3o8q+bmFqlOnV5Egd6
-      PK6tyPHNrlu4fUciexE0sofRcoxqrQAAAAMBAAEAAAGBALcDcjyo9fIyAPemUE/gSEva8T
-      qrrGy2PX6zHuVDP2LDRG8XcE1TzQl5fCJYgfQUJ5ovMtqH5CFu1zqMXigfAkozph5QUhgM
-      /heDE85EyoMZx3L1/fiq8YUNBbcEXmJf0iuTruR5VvZBCycTZykyKayNOFmruCGoKyeWte
-      PW7dxMQe8lL9g40WU3WksVLo8k4VALZpRFdYu65vvlivPHwks/Mq71DDubctTIKYjGHeqL
-      g79GEJAIu0SBodw1rhLKIbMne4iFWCyp5FIbPqjHgxe+Rhs/Ot1hK0lzPA7OcF80ePMOh5
-      AtIAutcTUZeQGz56I2e01dr6UMo2vW/z6krgsWFwTRAE34Ka+7wJQj4X7O3QxEkJYy6UZT
-      V6AoLikExq59ZmtZdHuQpGvaMxbzJJt0pAASZIinR/D8uyiOD95IdwlVIxaK8vL1yJJTVI
-      aIL5iVn2uKT+dogxCWaZdVoUXJ3iqIHR5jeZHJ3RlqIiZ7Sy6daymQdnIS3iRG9XPbgQAA
-      AMBVLHyCyCi4j2yvjUxNl+shU5Q3EuMLeQeD78gI76hiRBEFLFb8lvMpcPS0+gGR8Vgin/
-      lORmqKehPbSCE3UIbE8VldMpMvXcyDYa3CYDvOhCF70+G6xh92yvzQKxkM0nnj9mtnLHmt
-      ATN2pfgLYdjTOGy1J4iYPc3tkrdkPgmcj/LUq2HmY94wqspnwP9Q+/jX+PoNVK1AmyzXCt
-      eAn4waWhL+gj6S8RK96EevTZmqn3n6q1HDG50IByVgiKH2Wg0AAADBAP3AUsMXoDR0ENFL
-      EzqPktCAokwFXyJeYZYmN/q/obnt1KG3qAb9uNkZh6ePy1HRy8xl5/32TEgElwLF78lhqK
-      P/TROlsbvHDapkIKJkSxoB00DM7hTH5I5AU+FppxSSP/dTIHq/Vo/WtESzJlaEN0H1rlHB
-      OVNt4ciUfFed8dOIMt7Lafqpb6MyHQQl57d/9KkCkaa9sMHIz7pfbPC1kv4nRV5LdG9Ic3
-      j9M4ZK3LY2LMzQXkli71JOjbCDbxJimQAAAMEA+hI6B7hk1Zi6HZH6NsskZAFK78UWdvZ2
-      FNufW+iYwT7gPqvzKG03nMo6rJyM0jtl2P6y1yY/ZcCJ8q0fDjEkkER3Pl2UZ2jsFZN50A
-      htNcKBAOmSXPEN95Etml3bky8HR7BO5zSJosuJzfIrx8QRlDEx9LFGjt7nQOqKWbfUkIMp
-      UqpV24iMG9N6hKVyHGoqVx86bj8fZ+LOueT3YUoDo++t5ZFpNuGUGIMCaSsOgy0X5/RSgW
-      v/Rz2V1LeVP6k1AAAADmJ1aWxkZXJAbWFqaW1lAQIDBA==
-      -----END OPENSSH PRIVATE KEY-----
+    builder_key: FIXME (add secret reference)
     kind: debian
     name: debian-11
     type: debian10_64Guest

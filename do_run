@@ -1,3 +1,10 @@
+if [ ! -f id_rsa ] ; then
+  echo "Please install your builder key into ./id_rsa file"
+  exit 1
+fi
+
+kubectl create secret generic majime-builder --from-file=ssh-privatekey=./id_rsa
+
 kubectl apply -f config/samples/cache_v1alpha1_packer.yaml
 
 # this creates ephemeral storage on sabre

@@ -7,7 +7,11 @@ spec:
   - builder: vbox
     builder_hostname: majime
     builder_username: builder
-    builder_key: FIXME (add secret reference)
+    builder_key:
+      valueFrom:
+        secretRef:
+          name: majime-builder
+          key: ssh-privatekey
     kind: debian
     name: debian-11
     type: Debian_64
@@ -70,7 +74,11 @@ spec:
   - builder: vmware
     builder_hostname: majime
     builder_username: builder
-    builder_key: FIXME (add secret reference)
+    builder_key:
+      valueFrom:
+        secretRef:
+          name: majime-builder
+          key: ssh-privatekey
     kind: debian
     name: debian-11
     type: debian10_64Guest

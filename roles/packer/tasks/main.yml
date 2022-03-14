@@ -21,17 +21,37 @@
     - item.metadata.namespace == ansible_operator_meta.namespace
   loop: "{{ k8s_cms.resources }}"
 
+- name: Get contents of all Secrets
+  community.kubernetes.k8s_info:
+    kind: Secret
+    namespace: "{{ ansible_operator_meta.namespace }}"
+  register: k8s_secrets
+
+- name: Configure Secret keys
+  set_fact:
+    packer_secrets: "{{ packer_secrets | default({}) | combine({ item.metadata.name: item.data }) }}"
+  when:
+    - item.kind == "Secret"
+    - item.metadata is defined
+    - item.metadata.name is defined
+    - item.data is defined
+    - item.metadata.namespace == ansible_operator_meta.namespace
+  loop: "{{ k8s_secrets.resources }}"
+
 - name: Make key space
   file:
     path: "{{ ansible_facts.env.HOME }}/.ssh"
     mode: '0700'
     state: directory
 
-- name: Install builder keys
+- name: Install builder keys (via Secret)
   copy:
     dest: "{{ ansible_facts.env.HOME }}/.ssh/{{ item.name }}-{{ item.builder }}.key"
     mode: '0600'
-    content: "{{ item.builder_key }}"
+    content: "{{ packer_secrets[item.builder_key.value_from.secret_ref.name][item.builder_key.value_from.secret_ref.key] | b64decode }}"
+  when:
+    - packer_secrets is defined
+    - item.builder_key.value_from is defined and item.builder_key.value_from.secret_ref is defined and item.builder_key.value_from.secret_ref.name is defined and item.builder_key.value_from.secret_ref.key is defined
   loop: "{{ packer_builds }}"
 
 - name: Instantiate builders

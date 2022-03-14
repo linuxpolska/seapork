@@ -40,6 +40,7 @@
       content: "{{ packer_cms[item.value_from.config_map_ref.name][item.value_from.config_map_ref.key] }}"
       dest: /tmp/packer/{{ build_name }}/http/{{ item.name }}
     when:
+      - packer_cms is defined
       - item.name is defined
       - item.value_from is defined and item.value_from.config_map_ref is defined and item.value_from.config_map_ref.name is defined and item.value_from.config_map_ref.key is defined
     loop: "{{ build.boot_files }}"
@@ -63,6 +64,7 @@
       content: "{{ packer_cms[item.value_from.config_map_ref.name][item.value_from.config_map_ref.key] }}"
       dest: /tmp/packer/{{ build_name }}/scripts/{{ item.name }}
     when:
+      - packer_cms is defined
       - item.name is defined
       - item.value_from is defined and item.value_from.config_map_ref is defined and item.value_from.config_map_ref.name is defined and item.value_from.config_map_ref.key is defined
     loop: "{{ build.scripts }}"
